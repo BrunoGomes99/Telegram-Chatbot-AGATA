@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 17 11:06:50 2020
-
-@author: Bruno
 
 Este Script é responsável por realizar as operações de banco de dados
 
@@ -19,10 +16,9 @@ def searchUserByFromId(fromId, cursor):
         cont+=1
     if cont >= 1:
         return True # Retorna true se esse usuário já foi cadastrado
-        #print('achou')
+        
     else:
-        return False # ou falso se ainda não foi
-        #print('n achou')
+        return False # ou falso se ainda não foi        
 
 def createUser(firstName, lastName, fromId, cursor, connection):
     sql_command = "INSERT INTO tbusuario(Nome, SobreNome, FromId) VALUES (%s,%s,%s)"
@@ -34,7 +30,7 @@ def createConversation(fromId, msgIn, msgOut, dateMsg, cursor, connection):
     sqlIdUsuario = ("SELECT Id FROM tbusuario WHERE FromId = %s")
     cursor.execute(sqlIdUsuario, fromId)
     idUsers = cursor.fetchone()
-    for idUser in idUsers: # Tem esse foreach, mas só deve retornar um
+    for idUser in idUsers:
         idUsuario = idUser
     sql_command = "INSERT INTO tbconversa(FkIdUsuario, MensagemEntrada, MensagemSaida, DataMensagem) VALUES (%s,%s,%s,%s)"
     

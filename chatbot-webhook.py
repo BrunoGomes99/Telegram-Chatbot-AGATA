@@ -1,28 +1,32 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 14 18:50:10 2020
 
-@author: Bruno
+Script principal da ÁGATA.
+
+Responsável por realizar a conexão com o banco de dados, setar a url da hospedagem e por gerenciar as respostas do chatbot sempre que uma interação ocorrer.
+
+Baseado no pyTelegramBotAPI (https://github.com/eternnoir/pyTelegramBotAPI)
+
 """
 
 from agentbot import fetch_reply
-from createdb import createUser, createConversation, searchUserByFromId
+from operationsdb import createUser, createConversation, searchUserByFromId
 import telebot
-from telebot import types #add-ons connected
+from telebot import types
 from flask import Flask, request
 import os
 import pymysql
 
 connection = pymysql.connect(
-    host = 'mysql.jacobjr.org',
-    user = 'lincprog',
-    password = 'linc2020prog',
-    database = 'jj_chatbot'
+    host = 'host',
+    user = 'user',
+    password = 'password',
+    database = 'database'
 )
 
 cursor = connection.cursor() 
 
-TOKEN = "1310402069:AAFl7f_xOuojg2uZPzOiku0I5N1dhu7UKm8"
+TOKEN = "SEU_TOKEN_AQUI"
 bot = telebot.TeleBot(token=TOKEN)
 server = Flask(__name__)
         
@@ -60,7 +64,6 @@ def send_reply(message):
         else:
             bot.send_message(message.chat.id, response.text.text[0])
         createConversation(message.from_user.id, message.text, response.text.text[0], message.date, cursor, connection)
-    #bot.send_message(message.chat.id, message.text) # Para caso fosse um echo-bot
 
 @bot.message_handler(content_types=['photo'])
 def send_reply(message):
@@ -68,13 +71,6 @@ def send_reply(message):
     connection.ping(reconnect=True) 
     bot.send_message(message.chat.id, 'Gostei da foto!')
 
-
-@bot.message_handler (content_types = ['contact'])
-def contact (message):
-    # if the connection was lost, then it reconnects
-    connection.ping(reconnect=True) 
-    if message.contact is not None:
-        bot.send_message(message.chat.id, 'Adoraria conhecer o '+message.contact.first_name)
          
 @server.route('/' + TOKEN, methods=['POST'])
 def getMessage():
@@ -85,7 +81,7 @@ def getMessage():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url='https://telegram-bot-webhook.herokuapp.com/' + TOKEN) 
+    bot.set_webhook(url='https://your_heroku_project.com/' + TOKEN) 
     return "!", 200
 
 
